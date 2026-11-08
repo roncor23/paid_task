@@ -19,7 +19,13 @@ function makeQuery(env) {
   return (sql, params) => pg.query(sql, params);
 }
 
-function buildApp(env = process.env) {
+// Pasted dashboard values often carry stray whitespace or wrapping quotes; strip them.
+const clean = (v) => (typeof v === 'string' ? v.trim().replace(/^(["'])(.*)\1$/, '$2').trim() : v);
+const SECRETS = ['API_TOKEN', 'OWNER_USERNAME', 'OWNER_PASSWORD', 'SESSION_SECRET', 'WEBHOOK_URL', 'DATABASE_URL', 'ANTHROPIC_API_KEY'];
+
+function buildApp(rawEnv = process.env) {
+  const env = { ...rawEnv };
+  for (const k of SECRETS) if (env[k] !== undefined) env[k] = clean(env[k]);
   if (!env.API_TOKEN) console.warn('API_TOKEN is not set: every protected API call will return 401');
   return createApp({
     db: createDb(makeQuery(env)),
