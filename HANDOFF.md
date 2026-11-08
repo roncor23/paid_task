@@ -1,12 +1,12 @@
 # HANDOFF — Lead Inbox
 
-**Live URL:** https://LIVE-URL-HERE
+**Live URL:** https://paidtask-eight.vercel.app
 **Repo:** https://github.com/roncor23/paid_task
 
 ## Logins and tokens
-- **Owner dashboard:** `/login.html` → username `owner`, password `on1dpad9XHXZ2c`
-- **API_TOKEN:** `c2f2185a31acf4d8e2cd89eb7ac79dc447102fdf4427ff46`
-  e.g. `curl -H "Authorization: Bearer c2f2185a31acf4d8e2cd89eb7ac79dc447102fdf4427ff46" https://LIVE-URL-HERE/api/leads`
+- **Owner dashboard:** `/login.html` → username `owner`, password `paid_task1234`
+- **API_TOKEN:** `1e35b50f06054ef365d13bfc75b8c29719cdac1384e3237d`
+  e.g. `curl -H "Authorization: Bearer 1e35b50f06054ef365d13bfc75b8c29719cdac1384e3237d" https://paidtask-eight.vercel.app/api/leads`
 - **WEBHOOK_URL** is set to the webhook.site URL from your message.
 
 ## Pages
