@@ -21,7 +21,7 @@ Stack: Node 20+, Express, Postgres (Neon in production), plain HTML/CSS/JS. No b
 npm install
 cp .env.example .env   # fill in values; leave DATABASE_URL empty to use a local embedded Postgres in ./.pglite
 npm start              # http://localhost:3000
-npm test               # 27 tests, use an in-memory Postgres (PGlite), no setup needed
+npm test               # 29 tests, use an in-memory Postgres (PGlite), no setup needed
 ```
 
 To deploy on Vercel: import the repo, add the env vars from `.env.example` (DATABASE_URL = Neon connection string), deploy. The table is created automatically on the first request.
@@ -31,7 +31,7 @@ To deploy on Vercel: import the repo, add the env vars from `.env.example` (DATA
 - Leads are stored in Postgres (Neon), so they survive refreshes, restarts and redeploys.
 - Automatic category and urgency on every new lead. Keyword rules are always available. If `ANTHROPIC_API_KEY` is set, Claude sorts first and the rules take over if the call fails, times out (4s) or returns junk. No key is set right now, so the live app uses rules.
 - Webhook `{"event":"lead.created","lead":{...}}` POSTed to `WEBHOOK_URL` after the lead is saved. It has a 3s timeout, and a failure is logged but never blocks the save.
-- Full API exactly as specified: 201/200/400/401/404, filters `?status=` and `?category=` (also both together), newest first.
+- Full API exactly as specified: 201/200/400/401/404, filters `?status=` and `?category=` (also both together), newest first. CORS is open so other teams can call it from a browser with the Bearer token, and a POST body is read as JSON even if the `Content-Type` header is missing.
 - Owner dashboard that works on a phone: newest first, filter by status and category (the filters are kept in the URL), change status, add a note, log out.
 - Text is stored and returned exactly as typed (no trimming or escaping). The dashboard shows it safely as plain text.
 

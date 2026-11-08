@@ -14,7 +14,20 @@ function createApp({ db, sortLead, sendWebhook, env = {} }) {
   app.disable('x-powered-by');
   const sessionSecret = env.SESSION_SECRET || env.API_TOKEN;
 
-  app.use(express.json({ limit: '100kb' }));
+  // CORS so other teams' front ends can call the API. Allow-Origin "*" never sends cookies cross-site,
+  // so other origins must use the Bearer token.
+  app.use('/api', (req, res, next) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+    res.set('Access-Control-Max-Age', '86400');
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
+  });
+
+  // Parse JSON whatever the Content-Type says (scripts often omit it); real form posts go to urlencoded.
+  const isForm = (req) => req.is('application/x-www-form-urlencoded') || req.is('multipart/*');
+  app.use(express.json({ limit: '100kb', strict: true, type: (req) => !isForm(req) }));
   app.use(express.urlencoded({ extended: false, limit: '100kb' }));
 
   // Make sure the table exists before any DB work (cheap after the first call).

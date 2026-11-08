@@ -201,3 +201,21 @@ test('unknown API route returns JSON 404', async () => {
   const res = await request(app).get('/api/nope').set(AUTH);
   assert.equal(res.status, 404);
 });
+
+test('POST accepts a JSON body even without a JSON content-type', async () => {
+  const { app } = await setup();
+  const res = await request(app).post('/api/leads').set('Content-Type', 'text/plain').send(JSON.stringify(good));
+  assert.equal(res.status, 201);
+  assert.equal(res.body.name, good.name);
+});
+
+test('CORS: API answers preflight and sets allow-origin', async () => {
+  const { app } = await setup();
+  const pre = await request(app).options('/api/leads/1').set('Origin', 'https://other.example').set('Access-Control-Request-Method', 'PATCH');
+  assert.equal(pre.status, 204);
+  assert.equal(pre.headers['access-control-allow-origin'], '*');
+  assert.match(pre.headers['access-control-allow-headers'], /authorization/i);
+  assert.match(pre.headers['access-control-allow-methods'], /PATCH/);
+  const res = await post(app, good).set('Origin', 'https://other.example');
+  assert.equal(res.headers['access-control-allow-origin'], '*');
+});

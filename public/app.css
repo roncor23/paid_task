@@ -56,7 +56,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 @media (min-width: 900px) { .leads { grid-template-columns: 1fr 1fr; } .filters { grid-template-columns: 220px 220px 1fr; align-items: end; } }
 .lead-head { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
 .lead-name { font-size: 1.0625rem; font-weight: 700; word-break: break-word; }
-.lead-contact { font-size: .9375rem; word-break: break-all; margin-top: 2px; }
+.lead-contact { font-size: .9375rem; overflow-wrap: anywhere; margin-top: 2px; }
 .lead-msg { white-space: pre-wrap; word-break: break-word; margin: 12px 0; padding: 12px; background: #f8fafc; border-radius: 8px; }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .badge { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; background: #e2e8f0; color: #334155; }
@@ -74,3 +74,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .saved { font-size: .875rem; color: var(--success); }
 .empty { text-align: center; padding: 40px 16px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (max-width: 520px) {
+  .lead-head { flex-direction: column; gap: 2px; }
+  .lead-head time { order: -1; }
+}
+.lead-contact a { display: inline-block; }
+.lead-contact .phone-wrap { white-space: nowrap; }
