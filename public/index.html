@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Request a service</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main class="wrap">
+  <h1>Request a service</h1>
+  <p class="muted">Tell us what you need and we'll get back to you shortly.</p>
+
+  <form id="lead-form" class="card" novalidate>
+    <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+    <input id="name" name="name" autocomplete="name" maxlength="100" required aria-describedby="name-err">
+    <div class="field-error" id="name-err" role="alert"></div>
+
+    <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-err">
+    <div class="field-error" id="email-err" role="alert"></div>
+
+    <label for="phone">Phone <span class="opt">(optional)</span></label>
+    <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="50" aria-describedby="phone-err">
+    <div class="field-error" id="phone-err" role="alert"></div>
+
+    <label for="service">Service <span class="req" aria-hidden="true">*</span></label>
+    <select id="service" name="service" required aria-describedby="service-err">
+      <option value="">Choose a service…</option>
+      <option value="cleaning">Cleaning</option>
+      <option value="repair">Repair</option>
+      <option value="consultation">Consultation</option>
+      <option value="other">Other</option>
+    </select>
+    <div class="field-error" id="service-err" role="alert"></div>
+
+    <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+    <textarea id="message" name="message" maxlength="2000" required aria-describedby="message-hint message-err"></textarea>
+    <div class="hint" id="message-hint"><span id="count">0</span> / 2000 characters</div>
+    <div class="field-error" id="message-err" role="alert"></div>
+
+    <button class="btn btn-block" type="submit" id="submit">Send request</button>
+    <div class="alert alert-error" id="form-error" role="alert" hidden></div>
+  </form>
+
+  <div class="card alert-success" id="thanks" hidden tabindex="-1">
+    <h2>Thanks! We got your request.</h2>
+    <p>We'll be in touch soon.</p>
+    <button class="btn btn-ghost" type="button" id="again">Send another</button>
+  </div>
+  <p class="small muted" style="margin-top:24px"><a href="/login.html">Owner login</a></p>
+</main>
+<script>
+(() => {
+  const form = document.getElementById('lead-form');
+  const btn = document.getElementById('submit');
+  const formErr = document.getElementById('form-error');
+  const msg = document.getElementById('message');
+  const count = document.getElementById('count');
+  const chars = (s) => [...s].length;
+  msg.addEventListener('input', () => { count.textContent = chars(msg.value); });
+
+  const setErr = (field, text) => {
+    const el = document.getElementById(field);
+    document.getElementById(field + '-err').textContent = text || '';
+    el.setAttribute('aria-invalid', text ? 'true' : 'false');
+  };
+
+  function check(d) {
+    const e = {};
+    if (!d.name.trim()) e.name = 'Please enter your name.';
+    else if (chars(d.name) > 100) e.name = 'Name must be 100 characters or fewer.';
+    if (!d.email) e.email = 'Please enter your email.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) e.email = 'Please enter a valid email, like name@example.com.';
+    if (chars(d.phone) > 50) e.phone = 'Phone must be 50 characters or fewer.';
+    if (!d.service) e.service = 'Please choose a service.';
+    if (!d.message.trim()) e.message = 'Please write a short message.';
+    else if (chars(d.message) > 2000) e.message = 'Message must be 2000 characters or fewer.';
+    return e;
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    formErr.hidden = true;
+    const d = Object.fromEntries(['name', 'email', 'phone', 'service', 'message'].map((k) => [k, form[k].value]));
+    const errs = check(d);
+    ['name', 'email', 'phone', 'service', 'message'].forEach((k) => setErr(k, errs[k]));
+    const first = Object.keys(errs)[0];
+    if (first) { document.getElementById(first).focus(); return; }
+
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || 'Something went wrong. Please try again.');
+      form.reset(); count.textContent = '0';
+      form.hidden = true;
+      const thanks = document.getElementById('thanks');
+      thanks.hidden = false; thanks.focus();
+    } catch (err) {
+      formErr.textContent = err.message === 'Failed to fetch' ? 'Could not reach the server. Check your connection and try again.' : err.message;
+      formErr.hidden = false;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send request';
+    }
+  });
+
+  document.getElementById('again').addEventListener('click', () => {
+    document.getElementById('thanks').hidden = true; form.hidden = false; document.getElementById('name').focus();
+  });
+})();
+</script>
+</body>
+</html>

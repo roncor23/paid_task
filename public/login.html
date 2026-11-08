@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Owner login</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main class="wrap" style="max-width:420px">
+  <h1>Owner login</h1>
+  <form id="login" class="card">
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username" value="owner" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button class="btn btn-block" type="submit" id="btn">Log in</button>
+    <div class="alert alert-error" id="err" role="alert" hidden></div>
+  </form>
+  <p class="small muted" style="margin-top:24px"><a href="/">← Back to the form</a></p>
+</main>
+<script>
+document.getElementById('login').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  err.hidden = true; btn.disabled = true; btn.textContent = 'Logging in…';
+  try {
+    const res = await fetch('/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: ev.target.username.value, password: ev.target.password.value }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || 'Login failed');
+    location.href = '/dashboard';
+  } catch (e) {
+    err.textContent = e.message; err.hidden = false;
+    document.getElementById('password').focus();
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log in';
+  }
+});
+</script>
+</body>
+</html>

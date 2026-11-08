@@ -1,0 +1,7 @@
+{
+  "framework": null,
+  "functions": {
+    "api/index.js": { "includeFiles": "views/**", "maxDuration": 15 }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

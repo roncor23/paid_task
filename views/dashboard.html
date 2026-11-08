@@ -1,1 +1,80 @@
-<!doctype html><title>Dashboard</title>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leads · Dashboard</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main class="wrap wrap-wide">
+  <div class="topbar">
+    <div>
+      <h1 style="margin:0">Leads</h1>
+      <div class="small muted" id="summary" aria-live="polite">Loading…</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="logout" type="button">Log out</button>
+  </div>
+
+  <div class="filters">
+    <div>
+      <label for="f-status">Status</label>
+      <select id="f-status">
+        <option value="">All statuses</option>
+        <option value="new">New</option>
+        <option value="contacted">Contacted</option>
+        <option value="won">Won</option>
+        <option value="lost">Lost</option>
+      </select>
+    </div>
+    <div>
+      <label for="f-category">Category</label>
+      <select id="f-category">
+        <option value="">All categories</option>
+        <option value="booking">Booking</option>
+        <option value="question">Question</option>
+        <option value="complaint">Complaint</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div><button class="btn btn-ghost btn-sm" id="refresh" type="button">Refresh</button></div>
+  </div>
+
+  <div class="alert alert-error" id="err" role="alert" hidden></div>
+  <div class="leads" id="leads"></div>
+</main>
+
+<template id="lead-tpl">
+  <article class="card lead">
+    <div class="lead-head">
+      <div>
+        <div class="lead-name"></div>
+        <div class="lead-contact"><a class="email"></a><span class="phone-wrap"> · <a class="phone"></a></span></div>
+      </div>
+      <time class="small muted" style="white-space:nowrap"></time>
+    </div>
+    <div class="badges"></div>
+    <div class="lead-msg"></div>
+    <div class="lead-actions">
+      <div class="row">
+        <label class="small" style="margin:0">Status
+          <select class="status" style="width:auto;margin-left:6px">
+            <option value="new">New</option><option value="contacted">Contacted</option>
+            <option value="won">Won</option><option value="lost">Lost</option>
+          </select>
+        </label>
+        <span class="saved status-saved" aria-live="polite"></span>
+      </div>
+      <label class="small" style="margin:0">Note
+        <textarea class="note" maxlength="5000" placeholder="e.g. Called back, booked for Friday"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn btn-sm save-note" type="button">Save note</button>
+        <span class="saved note-saved" aria-live="polite"></span>
+      </div>
+    </div>
+  </article>
+</template>
+<script src="/dashboard.js"></script>
+</body>
+</html>
